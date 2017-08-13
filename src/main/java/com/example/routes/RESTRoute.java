@@ -2,6 +2,7 @@ package com.example.routes;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
+import org.apache.camel.model.rest.RestBindingMode;
 import org.apache.camel.model.rest.RestParamType;
 
 import com.example.model.User;
@@ -13,7 +14,7 @@ public class RESTRoute extends RouteBuilder {
 	public void configure() throws Exception {
 		// TODO Auto-generated method stub
 		
-		restConfiguration().contextPath("/hello/rest").component("servlet").dataFormatProperty("prettyPrint", "true")
+		restConfiguration().contextPath("/hello/rest").component("servlet").dataFormatProperty("prettyPrint", "true").bindingMode(RestBindingMode.auto)
 		.host("0.0.0.0").port(8181).apiContextPath("/api-docs")
 		.apiProperty("init.base.path", "hello/rest")
 		.apiProperty("init.api.path", "/api-docs")
@@ -27,11 +28,11 @@ public class RESTRoute extends RouteBuilder {
 		
 		rest("/user")
 		.get()
-			.param().name("page").type(RestParamType.query).description("Number page").defaultValue("1").required(Boolean.FALSE).endParam()
-		.produces("application/json").route().bean(HelloService.class, "getListUser").marshal().json(JsonLibrary.Jackson, true).endRest()
-		.get("/{id}").produces("application/json").route().bean(HelloService.class, "getUser").marshal().json(JsonLibrary.Jackson, true).endRest()
-		.delete("/{id}").produces("application/json").route().bean(HelloService.class, "removeUser").marshal().json(JsonLibrary.Jackson, true).endRest()
-		.post().type(User.class).produces("application/json").route().bean(HelloService.class, "insertUser").marshal().json(JsonLibrary.Jackson, true).endRest()
+			.param().name("page").type(RestParamType.query).description("Number page (not implemented)").defaultValue("1").required(Boolean.FALSE).endParam()
+		.produces("application/json").route().bean(HelloService.class, "getListUser").endRest()
+		.get("/{id}").route().bean(HelloService.class, "getUser").endRest()
+		.delete("/{id}").produces("application/json").route().bean(HelloService.class, "removeUser").endRest()
+		.post().type(User.class).produces("text/plain").route().bean(HelloService.class, "insertUser").setBody().constant("OK").endRest()
 	;
 		
 	}

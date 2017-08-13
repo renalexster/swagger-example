@@ -1,6 +1,6 @@
 package com.example.service;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.camel.Body;
@@ -10,24 +10,35 @@ import com.example.model.User;
 
 public class HelloService {
 
-	private static List<User> repoUser = Arrays.asList(new User("User 1", 1), new User("User 2", 2));
+	private static List<User> repoUser;
 	
+	static {
+		repoUser = new ArrayList<>();
+		repoUser.add(new User("User 1", 1));
+		repoUser.add(new User("User 2", 2));
+	}
 	
 	public List<User> getListUser(){
 		return repoUser;
 	}
 	
 	public User getUser(@Header("id") Integer id) {
-		return repoUser.stream().filter(u -> u.getId()==id).findFirst().get();
+		try {
+			User ret = repoUser.stream().filter(u -> u.getId()==id).findFirst().get();
+			return ret;
+		} catch (Exception e) {
+			return null;
+		}
+		
 	}
 	
 	public void insertUser(@Body User user) {
 		repoUser.add(user);
 	}
 	
-	public void removeUser(@Header("id") Integer id) {
-		repoUser.removeIf(u -> u.getId()==id);
-		return;
+	public String removeUser(@Header("id") Integer id) {
+		String retur = repoUser.removeIf(u -> u.getId()==id) ? "OK": "Ops";
+		return retur;
 	}
 	
 	
