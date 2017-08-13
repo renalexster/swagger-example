@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:camel="http://camel.apache.org/schema/spring"
+    xmlns:osgi="http://www.springframework.org/schema/osgi"
+    xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd  http://www.springframework.org/schema/osgi      http://www.springframework.org/schema/osgi/spring-osgi.xsd     http://www.springframework.org/schema/osgi-compendium      http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd">
+    <bean class="com.example.routes.RESTRoute" id="camelRoute"/>
+    <osgi:service id="httpServletService"
+        interface="javax.servlet.http.HttpServlet" ref="swaggerServlet">
+        <service-properties>
+            <entry key="alias" value="/api-docs/*"/>
+            <entry key="init-prefix" value="init."/>
+            <entry key="init.cors" value="true"/>
+            <entry key="init.base.path" value="ati-nta/rest"/>
+            <entry key="init.api.path" value="/api-docs"/>
+            <entry key="init.api.title" value="ATI NAJ API"/>
+            <entry key="init.api.version" value="1.0.0"/>
+            <entry key="init.api.description" value="ATI - NAJ REST service"/>
+        </service-properties>
+    </osgi:service>
+    <bean
+        class="org.apache.camel.component.swagger.DefaultCamelSwaggerServlet" id="swaggerServlet"/>
+    <osgi:reference id="httpService" interface="org.osgi.service.http.HttpService"/>
+    <bean
+        class="org.apache.camel.component.servlet.CamelHttpTransportServlet" id="camelServlet"/>
+    <bean
+        class="org.apache.camel.component.servlet.osgi.OsgiServletRegisterer"
+        destroy-method="unregister" id="osgiServletRegistererBean" init-method="register">
+        <property name="alias" value="/ati-nta/rest"/>
+        <property name="httpService" ref="httpService"/>
+        <property name="servlet" ref="camelServlet"/>
+    </bean>
+    <camelContext id="swager-example"
+        trace="false" xmlns="http://camel.apache.org/schema/spring">
+        <camel:routeBuilder ref="camelRoute"/>
+    </camelContext>
+</beans>
