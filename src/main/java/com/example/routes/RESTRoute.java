@@ -4,6 +4,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestParamType;
 
+import com.example.model.User;
 import com.example.service.HelloService;
 
 public class RESTRoute extends RouteBuilder {
@@ -21,6 +22,8 @@ public class RESTRoute extends RouteBuilder {
         .apiProperty("api.version", "1.0.0")
         .apiProperty("cors", "true");
 		
+		rest("/ping").get().produces("text/plain").route().routeId("teste").transform().constant("Hello.")
+		.routeId("ping").endRest();
 		
 		rest("/user")
 		.get()
@@ -28,7 +31,7 @@ public class RESTRoute extends RouteBuilder {
 		.produces("application/json").route().bean(HelloService.class, "getListUser").marshal().json(JsonLibrary.Jackson, true).endRest()
 		.get("/{id}").produces("application/json").route().bean(HelloService.class, "getUser").marshal().json(JsonLibrary.Jackson, true).endRest()
 		.delete("/{id}").produces("application/json").route().bean(HelloService.class, "removeUser").marshal().json(JsonLibrary.Jackson, true).endRest()
-		.post("/user").produces("application/json").route().bean(HelloService.class, "insertUser").marshal().json(JsonLibrary.Jackson, true).endRest()
+		.post().type(User.class).produces("application/json").route().bean(HelloService.class, "insertUser").marshal().json(JsonLibrary.Jackson, true).endRest()
 	;
 		
 	}

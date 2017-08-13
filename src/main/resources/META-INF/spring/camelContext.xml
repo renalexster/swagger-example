@@ -11,11 +11,11 @@
             <entry key="alias" value="/api-docs/*"/>
             <entry key="init-prefix" value="init."/>
             <entry key="init.cors" value="true"/>
-            <entry key="init.base.path" value="ati-nta/rest"/>
+            <entry key="init.base.path" value="hello/rest"/>
             <entry key="init.api.path" value="/api-docs"/>
-            <entry key="init.api.title" value="ATI NAJ API"/>
+            <entry key="init.api.title" value="Hello Swagger"/>
             <entry key="init.api.version" value="1.0.0"/>
-            <entry key="init.api.description" value="ATI - NAJ REST service"/>
+            <entry key="init.api.description" value="Swagger REST example"/>
         </service-properties>
     </osgi:service>
     <bean
@@ -26,12 +26,12 @@
     <bean
         class="org.apache.camel.component.servlet.osgi.OsgiServletRegisterer"
         destroy-method="unregister" id="osgiServletRegistererBean" init-method="register">
-        <property name="alias" value="/ati-nta/rest"/>
+        <property name="alias" value="/hello/rest"/>
         <property name="httpService" ref="httpService"/>
         <property name="servlet" ref="camelServlet"/>
     </bean>
     <camelContext id="swager-example"
-        trace="false" xmlns="http://camel.apache.org/schema/spring">
+        trace="true" xmlns="http://camel.apache.org/schema/spring">
         <camel:routeBuilder ref="camelRoute"/>
     </camelContext>
 </beans>
