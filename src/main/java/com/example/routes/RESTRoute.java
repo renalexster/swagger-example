@@ -1,10 +1,12 @@
 package com.example.routes;
 
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.model.dataformat.BindyType;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.apache.camel.model.rest.RestParamType;
 
+import com.example.model.Person;
 import com.example.model.User;
 import com.example.service.HelloService;
 
@@ -14,7 +16,7 @@ public class RESTRoute extends RouteBuilder {
 	public void configure() throws Exception {
 		// TODO Auto-generated method stub
 		
-		restConfiguration().contextPath("/hello/rest").component("servlet").dataFormatProperty("prettyPrint", "true").bindingMode(RestBindingMode.auto)
+		restConfiguration().contextPath("/hello/rest").component("jetty").dataFormatProperty("prettyPrint", "true").bindingMode(RestBindingMode.auto)
 		.host("0.0.0.0").port(8181).apiContextPath("/api-docs")
 		.apiProperty("init.base.path", "hello/rest")
 		.apiProperty("init.api.path", "/api-docs")
@@ -32,8 +34,14 @@ public class RESTRoute extends RouteBuilder {
 		.produces("application/json").route().bean(HelloService.class, "getListUser").endRest()
 		.get("/{id}").route().bean(HelloService.class, "getUser").endRest()
 		.delete("/{id}").produces("application/json").route().bean(HelloService.class, "removeUser").endRest()
-		.post().type(User.class).produces("text/plain").route().bean(HelloService.class, "insertUser").setBody().constant("OK").endRest()
-	;
+		.post().type(User.class).produces("text/plain").route().bean(HelloService.class, "insertUser").setBody().constant("OK").endRest();
+		
+		
+		rest("file")
+		.get().produces("application/json").route().pollEnrich("file://input?fileName=arquivo.csv&noop=true&idempotent=false")
+		.unmarshal().bindy(BindyType.Csv, Person.class)
+		.bean(HelloService.class, "debug")
+		.marshal().json(JsonLibrary.Jackson);
 		
 	}
 

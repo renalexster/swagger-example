@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.camel.Body;
+import org.apache.camel.Exchange;
 import org.apache.camel.Header;
 
 import com.example.model.User;
@@ -41,6 +42,9 @@ public class HelloService {
 		return retur;
 	}
 	
-	
+	public Object debug(@Body Object payload, Exchange ex) {
+		System.out.println(ex.getExchangeId());
+		return payload;
+	}
 
 }
